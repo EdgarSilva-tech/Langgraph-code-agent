@@ -1,0 +1,7 @@
+langgraph
+langchain-community
+langchain-core
+python-dotenv
+langchain_anthropic
+pydantic
+ipython
