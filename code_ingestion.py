@@ -22,7 +22,3 @@ def get_code(link: str) -> None:
                         code_files[file] = [file_content.read()]
 
     return code_files
-
-
-files = get_code(r"C:\Users\edgar\OneDrive\Ambiente de Trabalho\AI_Projects\README_writer")
-print(files)
