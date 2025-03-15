@@ -1,5 +1,5 @@
-from agent import graph
-from code_ingestion import get_code
+from src.agent import graph
+from src.code_ingestion import get_code
 import argparse
 
 def main(source, question):
