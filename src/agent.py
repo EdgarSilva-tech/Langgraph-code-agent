@@ -65,7 +65,7 @@ tool_node = ToolNode(tools=tools)
 graph_state.add_node("tools", tool_node)
 
 graph_state.add_edge(START, 'ingest_code')
-graph_state.add_edge('ingest_code', 'router')
+graph_state.add_edge('ingest_code', 'llm')
 graph_state.add_conditional_edges('llm', tools_condition)
 graph_state.add_edge("tools", "llm")
 graph_state.add_edge('llm', END)
