@@ -1,15 +1,11 @@
 import ast
-from src.code_ingestion import get_code
 from langchain_anthropic import ChatAnthropic
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class Tests:
-    tests: str # Ensure both keys and values are strings
-
-llm = ChatAnthropic(model="claude-3-5-sonnet-20240620").with_structured_output(Tests)
+llm = ChatAnthropic(model="claude-3-5-sonnet-20240620")
 
 def extract_functions(code_files: dict):
     """
@@ -31,19 +27,17 @@ def extract_functions(code_files: dict):
 
     if batched_prompt:
         for file, func_list in functions.items():
-            prompt = f"Write PyTest unit tests for the following functions. Include only the Python code without any other comments:\n\n{batched_prompt}"
-            test_cases[file] = llm.invoke(prompt)
+            prompt = (
+                f"Write only valid unit test code for the following functions from the file {file}.\n"
+                "Do not include any markdown formatting, explanations, or comments. Only return pure Python code:\n\n"
+                f"{batched_prompt}"
+            )
+            test_cases[file] = llm.invoke(prompt).content
 
-        # Distribute test cases back into their respective files
-        # for file in functions.keys():
-        #     test_cases[file] = response  # Splitting tests by double newlines (adjust if needed)
-            # with open('test_'+ file, "w") as f:
-            #     f.write(test_cases[file][1])
+            if not os.path.exists('./tests'):
+                os.makedirs('./tests')
+
+            with open(f'./tests/test_{file}', 'w') as f:
+                f.write(test_cases[file])
 
     return test_cases
-
-
-# os.makedirs('./tests', exist_ok=True)
-# for file, cases in functions.items():
-#     with open('./tests' + file, 'w') as f:
-#         f.write(cases)
