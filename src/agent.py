@@ -21,33 +21,6 @@ class State(TypedDict):
     messages: Annotated[list, add_messages]
     code_content: str
 
-class Router(BaseModel):
-    route: Literal["general-questions", "tests", "README.md", "more-info"]
-
-def router(state: State):
-    router_prompt = f"""You are a specialized code assistant. Your job is help people about in answer any informations about programming.
-        A user will come to you with an inquiry. Your job is to classify what type of inquiry it is. The types of inquiries you should classify it as are:
-
-        ## `general-questions`
-        Classify a user inquiry as this if the user is asking a general question about the code.  \
-        For example:
-        - The user needs you to explain an error in the code
-        - The user asks for a function to be created
-        - The user asks for a function to be created
-        - The user asks for improvement suggestions for the code
-
-        ## `tests`
-        Classify a user inquiry as this if the user is asking you to write unit tests for the code.
-
-        ## `README`
-        Classify a user inquiry as this if the user asks you to generate documentation for the code.
-        
-        ## `more-info`
-        Classify a user inquiry as this if the user asks an unclear question or if the question is unrelated to programming."""
-    
-    response = llm.with_structured_output(response_type=Router).invoke(router_prompt + state['messages'][-1])
-    return response['route']
-
 def model(state: State):
     """Model function to interact with the LangChain agent."""
     prompt = f"Given the following context: {state['messages']} and code: {state['code_content']} answer any question about it and execute any tasks asked for example: create a function, write a Readme, etc."
@@ -57,7 +30,6 @@ def model(state: State):
 graph_state = StateGraph(State)
 
 graph_state.add_node('ingest_code', get_code)
-graph_state.add_node('router', router)
 graph_state.add_node('llm', model)
 graph_state.add_node('extract_functions', extract_functions)
 graph_state.add_node('generate_readme', generate_readme)
